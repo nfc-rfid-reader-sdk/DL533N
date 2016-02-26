@@ -1,0 +1,110 @@
+pn53x-tamashell << EOF
+# GetFirmware 
+02
+
+# 'p' for pause in milliseconds
+p 500
+
+# Get status registers P3CFGA P3CFGB P3
+
+06 ff f4 ff f5 ff b0
+
+p 500
+
+# WriteRegister P3 to zero  ffb0 - P3 reg
+
+08 ff b0 00
+
+P 500
+
+# Get status registers P7CFGA P7CFGB P7
+
+06 ff fc ff fd ff f7
+
+p 500
+
+# WriteRegister P7 to zero   fff7 = p7 reg
+
+08 ff f7 00
+
+p 500
+
+# Get status register 6106     - needed to control P34 GPIO
+
+06 61 06
+
+# WriteRegister 6106 to 0x1B    - 0x1b value - bit 'SVDD' must be enabled to control P34
+
+08 61 06 1b
+
+p 500
+
+# Turn on Green == WriteRegister P7 0x01
+
+08 ff f7 01
+
+p 2000
+
+# Turn off Green == WriteRegister P7 0x00
+
+08 ff f7 00
+
+p 1000
+
+# Turn on Red == WriteRegister P3 to 0x20 - bit 5 GPIO P35 up
+
+08 ff b0 20
+
+p 2000
+
+# Turn off Red = WriteRegister P3 to 0x00 - bit 5 GPIO P35 down
+
+08 ff b0 00
+
+p 1000
+
+# Play sound = WriteRegister P3 to 0x10 = bit 4 GPIO P34 up
+
+08 ff b0 10
+
+p 1000
+
+# turn off sound = WriteRegister P3 to 0x00 - bit 4 GPIO P34 down
+
+08 ff b0 00
+
+p 1000
+
+
+# NOW TURN ALL ON                        P7 = 0x01 P3 = 0x30
+
+08 ff f7 01 ff b0 30 
+
+p 2000
+
+# NOW P3 = 0x20
+08 ff b0 20
+
+p 500
+
+
+#  BY DEFAULT, GPIO PIS ARE IN QUASI BI-DIRECTIONAL STATE, CAN BE CHANGED TO PUSH PULL OUTPUT OPTIONALY
+#  NOW CHANGE GPIO FRO QUASI BI-DIRECTIONAL TO PUSH-PULL OUTPUT
+#  WRITE    P3CFGA P3CFGB ALL TO ff       (ff f4 and ff f5 registers )
+#  WRITE    P7CFGA P7CFGB ALL TO ff       (ff fc and ff fd registers )
+p 2000
+
+08 ff f4 ff ff f5 ff
+08 ff fc ff ff fd ff
+
+
+#  write P3 to 0x30  and P7 to 0x00
+08 ff b0 30 ff f7 01 
+p 2500
+
+#  write P7 to 0x00  and P3 to 0x00
+08 ff f7 00 ff b0 00
+p 1000
+
+
+
